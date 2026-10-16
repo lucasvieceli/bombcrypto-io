@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { logTrackClickEventAnalytics } from 'src/libs/logEvent';
@@ -9,7 +9,37 @@ import {
   arcadeFonts,
   breakpoint,
 } from 'src/theme/arcade';
-import { ArcadeContainer, BrickDivider } from 'src/components/ui';
+import { ArcadeContainer } from 'src/components/ui';
+import { spriteDataUrl } from 'src/game/atlas';
+
+/* Muro do templo que cerca o mapa do jogo (BorderBG1), repetido na largura. */
+const Wall = styled.div<{ $src: string }>`
+  height: 64px;
+  background-color: #5d6b4a;
+  background-image: ${({ $src }) => ($src ? `url(${$src})` : 'none')};
+  background-repeat: repeat-x;
+  background-size: auto 64px;
+  image-rendering: pixelated;
+  border-top: ${arcadeBorder.thick};
+  border-bottom: ${arcadeBorder.thick};
+
+  @media ${breakpoint.sm} {
+    height: 44px;
+    background-size: auto 44px;
+  }
+`;
+
+function useTempleWall() {
+  const [src, setSrc] = useState('');
+  useEffect(() => {
+    let alive = true;
+    spriteDataUrl('t0_border_top').then((u) => alive && setSrc(u));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return src;
+}
 
 const Wrapper = styled.footer`
   background: ${arcadeColors.nightDeep};
@@ -104,6 +134,7 @@ const Bottom = styled.div`
 `;
 
 const Footer: React.FC<{ id: string }> = ({ id }) => {
+  const wall = useTempleWall();
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -113,7 +144,7 @@ const Footer: React.FC<{ id: string }> = ({ id }) => {
 
   return (
     <Wrapper id={id}>
-      <BrickDivider />
+      <Wall $src={wall} aria-hidden="true" />
       <ArcadeContainer>
         <Inner>
           <div>

@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import { coinBurst } from 'src/game/coinBurst';
 import { Nav, Navbar, Dropdown } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { snapEvent, snapTrack } from 'src/libs/snapchat';
@@ -132,7 +133,11 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
 
       {/* PLAY NOW */}
       <Nav className="d-none d-lg-flex align-items-center pe-4">
-        <PlayButton type="button" onClick={clickPlayNow}>
+        <PlayButton
+          type="button"
+          onClick={clickPlayNow}
+          onPointerEnter={(e) => coinBurst(e.currentTarget)}
+        >
           Play Now
         </PlayButton>
       </Nav>
@@ -190,6 +195,16 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
               }}
             >
               DATABASE
+            </OtherMenuItem>
+            <OtherMenuItem
+              onClick={() => {
+                logTrackClickEventAnalytics('community_tools_click');
+                const el = document.getElementById('community');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                else window.location.href = '/#community';
+              }}
+            >
+              COMMUNITY TOOLS
             </OtherMenuItem>
           </OtherMenu>
         </OtherWrapper>
@@ -379,6 +394,7 @@ const playPulse = keyframes`
 `;
 
 const PlayButton = styled.button`
+  position: relative;
   font-family: ${arcadeFonts.display};
   font-size: 20px;
   letter-spacing: 1px;

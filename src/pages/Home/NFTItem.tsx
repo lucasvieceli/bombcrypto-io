@@ -388,10 +388,12 @@ const NFTCONFIG = {
   },
 };
 
-const NFTItem: React.FC<{ id: string; network: string }> = ({
-  id,
-  network,
-}) => {
+const NFTItem: React.FC<{
+  id: string;
+  network: string;
+  /** A home nova mostra as casas na seção própria (HouseShowcase). */
+  hideHouses?: boolean;
+}> = ({ id, network, hideHouses = false }) => {
   const isMobile = isMobileDevice();
   const [raritySelected, setSelectRarity] = useState(RARITYDEFINE.COMMON);
   const rarityClick = (id) => {
@@ -718,86 +720,92 @@ const NFTItem: React.FC<{ id: string; network: string }> = ({
             />
           </Reveal>
 
-          <Reveal>
-            <ContractInfo className="mb-3">
-              <ContractContain>
-                {/* Icon + Symbol */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: '60px',
-                  }}
-                >
-                  <CoinIcon src={bomberHouse} alt="bhouse" />
-                  <p className="mb-0 text-black contract-title">
-                    {house.symbol}
-                  </p>
-                </div>
-
-                {/* Title + Address */}
-                <div style={{ flexGrow: 1 }}>
-                  <LeftText>
-                    <p className="mb-0 text-black contract-title">
-                      {house.title}
-                    </p>
-                    <p
-                      className="mb-0 text-blue wallet-address"
+          {!hideHouses && (
+            <>
+              <Reveal>
+                <ContractInfo className="mb-3">
+                  <ContractContain>
+                    {/* Icon + Symbol */}
+                    <div
                       style={{
-                        cursor: hasHouseAddress ? 'pointer' : 'default',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        minWidth: '60px',
                       }}
-                      onClick={() =>
-                        hasHouseAddress && onClickAddress(house.address)
-                      }
                     >
-                      {hasHouseAddress ? house.address : 'Coming soon'}
-                    </p>
-                  </LeftText>
-                </div>
+                      <CoinIcon src={bomberHouse} alt="bhouse" />
+                      <p className="mb-0 text-black contract-title">
+                        {house.symbol}
+                      </p>
+                    </div>
 
-                {/* Copy icon */}
-                <CopySlot>
-                  {!isMobile && hasHouseAddress && (
-                    <CoppyIcon
-                      src={coppy}
-                      alt="Copy address"
-                      onClick={() => Copy(house.address)}
-                    />
+                    {/* Title + Address */}
+                    <div style={{ flexGrow: 1 }}>
+                      <LeftText>
+                        <p className="mb-0 text-black contract-title">
+                          {house.title}
+                        </p>
+                        <p
+                          className="mb-0 text-blue wallet-address"
+                          style={{
+                            cursor: hasHouseAddress ? 'pointer' : 'default',
+                          }}
+                          onClick={() =>
+                            hasHouseAddress && onClickAddress(house.address)
+                          }
+                        >
+                          {hasHouseAddress ? house.address : 'Coming soon'}
+                        </p>
+                      </LeftText>
+                    </div>
+
+                    {/* Copy icon */}
+                    <CopySlot>
+                      {!isMobile && hasHouseAddress && (
+                        <CoppyIcon
+                          src={coppy}
+                          alt="Copy address"
+                          onClick={() => Copy(house.address)}
+                        />
+                      )}
+                    </CopySlot>
+                  </ContractContain>
+
+                  {/* Visit Market button */}
+                  {hasHouseMarket && (
+                    <MarketBtn
+                      type="button"
+                      onClick={() => window.open(house.market)}
+                    >
+                      Visit Market
+                    </MarketBtn>
                   )}
-                </CopySlot>
-              </ContractContain>
-
-              {/* Visit Market button */}
-              {hasHouseMarket && (
-                <MarketBtn
-                  type="button"
-                  onClick={() => window.open(house.market)}
-                >
-                  Visit Market
-                </MarketBtn>
-              )}
-            </ContractInfo>
-          </Reveal>
-          <RarityText>
-            <br />
-            BHouse is an NFT, serving as the homes of heroes within the game,
-            aiding in the restoration of energy depleted after mining rewards.
-            It comes with various stats and sizes and can be minted in limited
-            quantities within the game or traded on the marketplace
-            <br />
-          </RarityText>
-          <Reveal>
-            <ImgHouse src={houseImage} />
-          </Reveal>
-          <RarityText>
-            The higher the tier of the house the faster your{'\n'}BHero recharge
-          </RarityText>
-          <Reveal>
-            <ImgHouse src={rechart} />
-          </Reveal>
-          <Reveal>
-            <ImgsScreenShot src={getScreenshotByNetwork(network)} />
-          </Reveal>
+                </ContractInfo>
+              </Reveal>
+              <RarityText>
+                <br />
+                BHouse is an NFT, serving as the homes of heroes within the
+                game, aiding in the restoration of energy depleted after mining
+                rewards. It comes with various stats and sizes and can be minted
+                in limited quantities within the game or traded on the
+                marketplace
+                <br />
+              </RarityText>
+              <Reveal>
+                <ImgHouse src={houseImage} />
+              </Reveal>
+              <RarityText>
+                The higher the tier of the house the faster your{'\n'}BHero
+                recharge
+              </RarityText>
+              <Reveal>
+                <ImgHouse src={rechart} />
+              </Reveal>
+              <Reveal>
+                <ImgsScreenShot src={getScreenshotByNetwork(network)} />
+              </Reveal>
+            </>
+          )}
         </Content>
       </Container>
     </section>
