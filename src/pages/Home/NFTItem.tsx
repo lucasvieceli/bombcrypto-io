@@ -10,6 +10,41 @@ import {
   splgItem,
 } from 'src/data/item';
 import { RarityConfig, RarityType, RARITYDEFINE } from 'src/data/rarity';
+import { defineText, useText } from 'src/i18n';
+
+const TEXT = defineText(
+  {
+    title: 'NFT Items',
+    sub: [
+      'Earn your NFT items by playing the',
+      'game and sell it on the marketplace to make money',
+    ],
+    soon: 'Coming soon',
+    market: 'Visit Market',
+    hero: 'BHero is an NFT, serving as a hero within the game, with various attributes and rarities. It can be minted infinitely within the game or traded in the marketplace. Currently, BHero is used to mine reward tokens within the game, and in the future, it will be utilized in other on-chain features of the game.',
+    stronger: ['The higher the rarity the stronger stats', 'your BHero has'],
+    house:
+      'BHouse is an NFT, serving as the homes of heroes within the game, aiding in the restoration of energy depleted after mining rewards. It comes with various stats and sizes and can be minted in limited quantities within the game or traded on the marketplace',
+    tier: 'The higher the tier of the house the faster your\nBHero recharge',
+  },
+  {
+    title: 'Itens NFT',
+    sub: [
+      'Ganhe seus itens NFT jogando',
+      'e venda no Marketplace para ganhar dinheiro',
+    ],
+    soon: 'Em breve',
+    market: 'Ver no mercado',
+    hero: 'O BHero é um NFT que funciona como herói dentro do jogo, com atributos e raridades diferentes. Ele pode ser mintado sem limite dentro do jogo ou negociado no Marketplace. Hoje o BHero serve para minerar tokens de recompensa no jogo e, no futuro, também será usado em outros recursos on-chain do jogo.',
+    stronger: [
+      'Quanto maior a raridade, mais fortes',
+      'são os atributos do seu BHero',
+    ],
+    house:
+      'O BHouse é um NFT que funciona como a casa dos heróis no jogo, ajudando a recuperar a energia gasta para minerar recompensas. Ele vem com atributos e tamanhos diferentes, pode ser mintado em quantidade limitada dentro do jogo ou negociado no Marketplace',
+    tier: 'Quanto maior o nível da casa, mais rápido\no seu BHero recarrega',
+  },
+);
 import houseImage from '../../assests/NFTItems/House.png';
 import styled, { keyframes } from 'styled-components';
 import coppy from '../../assests/updateHome/Ô button/iconCoppy.png';
@@ -396,6 +431,7 @@ const NFTItem: React.FC<{
 }> = ({ id, network, hideHouses = false }) => {
   const isMobile = isMobileDevice();
   const [raritySelected, setSelectRarity] = useState(RARITYDEFINE.COMMON);
+  const t = useText(TEXT);
   const rarityClick = (id) => {
     setSelectRarity(id);
   };
@@ -559,12 +595,12 @@ const NFTItem: React.FC<{
         <Content className="detail">
           <Head>
             <SectionTitle $center className="title">
-              NFT Items
+              {t.title}
             </SectionTitle>
             <TextTitle className="text">
-              Earn your NFT items by playing the
+              {t.sub[0]}
               <br />
-              game and sell it on the marketplace to make money
+              {t.sub[1]}
               <br />
             </TextTitle>
             <br />
@@ -600,7 +636,7 @@ const NFTItem: React.FC<{
                           hasHeroAddress && onClickAddress(hero.address)
                         }
                       >
-                        {hasHeroAddress ? hero.address : 'Coming soon'}
+                        {hasHeroAddress ? hero.address : t.soon}
                       </p>
                     </LeftText>
                   </div>
@@ -622,18 +658,14 @@ const NFTItem: React.FC<{
                     type="button"
                     onClick={() => window.open(hero.market)}
                   >
-                    Visit Market
+                    {t.market}
                   </MarketBtn>
                 )}
               </ContractInfo>
             </Reveal>
             <RarityText>
               <br />
-              BHero is an NFT, serving as a hero within the game, with various
-              attributes and rarities. It can be minted infinitely within the
-              game or traded in the marketplace. Currently, BHero is used to
-              mine reward tokens within the game, and in the future, it will be
-              utilized in other on-chain features of the game.
+              {t.hero}
               <br />
             </RarityText>
           </Head>
@@ -705,9 +737,9 @@ const NFTItem: React.FC<{
             })}
           </Row>
           <RarityText>
-            The higher the rarity the stronger stats
+            {t.stronger[0]}
             <br />
-            your BHero has
+            {t.stronger[1]}
             <br />
           </RarityText>
           <Reveal>
@@ -754,7 +786,7 @@ const NFTItem: React.FC<{
                             hasHouseAddress && onClickAddress(house.address)
                           }
                         >
-                          {hasHouseAddress ? house.address : 'Coming soon'}
+                          {hasHouseAddress ? house.address : t.soon}
                         </p>
                       </LeftText>
                     </div>
@@ -777,27 +809,20 @@ const NFTItem: React.FC<{
                       type="button"
                       onClick={() => window.open(house.market)}
                     >
-                      Visit Market
+                      {t.market}
                     </MarketBtn>
                   )}
                 </ContractInfo>
               </Reveal>
               <RarityText>
                 <br />
-                BHouse is an NFT, serving as the homes of heroes within the
-                game, aiding in the restoration of energy depleted after mining
-                rewards. It comes with various stats and sizes and can be minted
-                in limited quantities within the game or traded on the
-                marketplace
+                {t.house}
                 <br />
               </RarityText>
               <Reveal>
                 <ImgHouse src={houseImage} />
               </Reveal>
-              <RarityText>
-                The higher the tier of the house the faster your{'\n'}BHero
-                recharge
-              </RarityText>
+              <RarityText>{t.tier}</RarityText>
               <Reveal>
                 <ImgHouse src={rechart} />
               </Reveal>

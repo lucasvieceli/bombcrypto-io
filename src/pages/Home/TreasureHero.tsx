@@ -5,6 +5,34 @@ import logo from 'src/assests/event/worldCup/logo.png';
 import { spriteStyle } from 'src/game/atlas';
 import { createTreasureMap, TreasureHud } from 'src/game/treasureMap';
 import { logTrackClickEventAnalytics } from 'src/libs/logEvent';
+import { defineText, useText } from 'src/i18n';
+
+const TEXT = defineText(
+  {
+    region: 'Live Treasure Hunt map',
+    canvas: 'Animated Treasure Hunt map. Click it to drop a bomb.',
+    title: 'Plant bombs. Break chests.',
+    titleEm: 'Earn BCOIN.',
+    sub: 'The pixel Bomberman where your heroes farm on their own. Watch them work, then drop a bomb yourself.',
+    play: 'Play now',
+    heroes: 'Meet the heroes',
+    chests: 'chests',
+    tap: 'Tap the map to drop a bomb',
+    click: 'Click the map to drop a bomb',
+  },
+  {
+    region: 'Mapa do Treasure Hunt ao vivo',
+    canvas: 'Mapa animado do Treasure Hunt. Clique nele para soltar uma bomba.',
+    title: 'Plante bombas. Quebre baús.',
+    titleEm: 'Ganhe BCOIN.',
+    sub: 'O Bomberman em pixel art em que seus heróis farmam sozinhos. Veja eles trabalhando e depois solte uma bomba você também.',
+    play: 'Jogar agora',
+    heroes: 'Conheça os heróis',
+    chests: 'baús',
+    tap: 'Toque no mapa para soltar uma bomba',
+    click: 'Clique no mapa para soltar uma bomba',
+  },
+);
 import {
   arcadeBorder,
   arcadeColors,
@@ -199,11 +227,19 @@ const Hint = styled.span<{ $gone: boolean }>`
   }
 `;
 
+/* A fonte pixelada desenha as maiúsculas ~0,15em acima do meio da linha
+   (o espaço de letras como g/p fica vazio): desce o texto para centralizar. */
+const HintText = styled.span`
+  position: relative;
+  top: 0.15em;
+`;
+
 const TreasureHero: React.FC<{ id: string }> = ({ id }) => {
   const hostRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hud, setHud] = useState<TreasureHud>({ bcoin: 0, sen: 0, chests: 0 });
   const [hintGone, setHintGone] = useState(false);
+  const t = useText(TEXT);
   const [isTouch] = useState(
     () =>
       typeof window !== 'undefined' &&
@@ -225,23 +261,16 @@ const TreasureHero: React.FC<{ id: string }> = ({ id }) => {
   }, []);
 
   return (
-    <Wrapper id={id} ref={hostRef} aria-label="Live Treasure Hunt map">
-      <canvas
-        ref={canvasRef}
-        role="img"
-        aria-label="Animated Treasure Hunt map. Click it to drop a bomb."
-      />
+    <Wrapper id={id} ref={hostRef} aria-label={t.region}>
+      <canvas ref={canvasRef} role="img" aria-label={t.canvas} />
       <Shade />
       <Over>
         <Box>
           <Logo src={logo} alt="Bomb Crypto" />
           <Title>
-            Plant bombs. Break chests. <em>Earn BCOIN.</em>
+            {t.title} <em>{t.titleEm}</em>
           </Title>
-          <Sub>
-            The pixel Bomberman where your heroes farm on their own. Watch them
-            work, then drop a bomb yourself.
-          </Sub>
+          <Sub>{t.sub}</Sub>
           <Ctas>
             <ArcadeButton
               as="a"
@@ -251,7 +280,7 @@ const TreasureHero: React.FC<{ id: string }> = ({ id }) => {
               $tone="red"
               onClick={() => logTrackClickEventAnalytics('play_click')}
             >
-              Play now
+              {t.play}
             </ArcadeButton>
             <ArcadeButton
               as="a"
@@ -264,7 +293,7 @@ const TreasureHero: React.FC<{ id: string }> = ({ id }) => {
                   ?.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              Meet the heroes
+              {t.heroes}
             </ArcadeButton>
           </Ctas>
         </Box>
@@ -280,14 +309,12 @@ const TreasureHero: React.FC<{ id: string }> = ({ id }) => {
         </Chip>
         <Chip>
           <span style={spriteStyle('chest_gold_0', 20)} />
-          {hud.chests} <small>chests</small>
+          {hud.chests} <small>{t.chests}</small>
         </Chip>
       </Hud>
       <Hint $gone={hintGone}>
         <span style={spriteStyle('bomb_1', 18)} />
-        {isTouch
-          ? 'Tap the map to drop a bomb'
-          : 'Click the map to drop a bomb'}
+        <HintText>{isTouch ? t.tap : t.click}</HintText>
       </Hint>
     </Wrapper>
   );

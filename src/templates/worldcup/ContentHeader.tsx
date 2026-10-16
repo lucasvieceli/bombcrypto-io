@@ -1,5 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { coinBurst } from 'src/game/coinBurst';
+import { defineText, useText } from 'src/i18n';
+import LanguageSwitch from 'src/components/ui/LanguageSwitch';
 import { Nav, Navbar, Dropdown } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { snapEvent, snapTrack } from 'src/libs/snapchat';
@@ -29,6 +31,33 @@ import {
   networkIcons,
 } from 'src/Contants/Contants';
 
+export const MENU_TEXT = defineText(
+  {
+    market: 'MARKET',
+    guide: 'GUIDE',
+    play: 'Play Now',
+    whitepaper: 'WHITEPAPER',
+    other: 'OTHER',
+    demo: 'DEMO PLAY',
+    leaderboard: 'LEADERBOARD',
+    distribution: 'TOKEN DISTRIBUTION',
+    database: 'DATABASE',
+    community: 'COMMUNITY TOOLS',
+  },
+  {
+    market: 'MERCADO',
+    guide: 'GUIA',
+    play: 'Jogar',
+    whitepaper: 'WHITEPAPER',
+    other: 'MAIS',
+    demo: 'JOGAR DEMO',
+    leaderboard: 'RANKING',
+    distribution: 'DISTRIBUIÇÃO DE TOKENS',
+    database: 'BANCO DE DADOS',
+    community: 'FERRAMENTAS DA COMUNIDADE',
+  },
+);
+
 type Props = {
   ChangeNetWork?: (value: string) => void;
   showSp?: (value: boolean) => void;
@@ -37,6 +66,7 @@ type Props = {
 const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const t = useText(MENU_TEXT);
   const [show, setShow] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [netWorkSelected, setNetwork] = useState(NETWORK.BINANCE);
@@ -121,12 +151,12 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
               window.open('https://market.bombcrypto.io/', '_blank');
             }}
           >
-            MARKET
+            {t.market}
           </NavItem>
         </NavItemLeft>
         <NavItemLeft>
           <NavItem isActive={location.pathname === '/guide'}>
-            <Link to="/guide">GUIDE</Link>
+            <Link to="/guide">{t.guide}</Link>
           </NavItem>
         </NavItemLeft>
       </Nav>
@@ -138,7 +168,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
           onClick={clickPlayNow}
           onPointerEnter={(e) => coinBurst(e.currentTarget)}
         >
-          Play Now
+          {t.play}
         </PlayButton>
       </Nav>
 
@@ -153,10 +183,10 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
             window.open('https://whitepaper.bombcrypto.io/', '_blank');
           }}
         >
-          WHITEPAPER
+          {t.whitepaper}
         </NavItem>
         <OtherWrapper>
-          <NavItem>OTHER</NavItem>
+          <NavItem>{t.other}</NavItem>
           <OtherMenu>
             <OtherMenuItem
               onClick={() => {
@@ -164,7 +194,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
                 window.open('https://demo.bombcrypto.io', '_blank');
               }}
             >
-              DEMO PLAY
+              {t.demo}
             </OtherMenuItem>
             <OtherMenuItem
               onClick={() => {
@@ -172,7 +202,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
                 window.open('https://treasure-mode.bombcrypto.io/', '_blank');
               }}
             >
-              LEADERBOARD
+              {t.leaderboard}
             </OtherMenuItem>
             <OtherMenuItem
               onClick={() => {
@@ -183,7 +213,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
                 );
               }}
             >
-              TOKEN DISTRIBUTION
+              {t.distribution}
             </OtherMenuItem>
             <OtherMenuItem
               onClick={() => {
@@ -194,7 +224,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
                 );
               }}
             >
-              DATABASE
+              {t.database}
             </OtherMenuItem>
             <OtherMenuItem
               onClick={() => {
@@ -204,7 +234,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
                 else window.location.href = '/#community';
               }}
             >
-              COMMUNITY TOOLS
+              {t.community}
             </OtherMenuItem>
           </OtherMenu>
         </OtherWrapper>
@@ -256,6 +286,7 @@ const ContentHeader: React.FC<Props> = ({ ChangeNetWork, showSp }) => {
             </Dropdown.Menu>
           </Dropdown>
         </NavDropdown>
+        <LanguageSwitch className="ms-3" />
       </Nav>
 
       {/* MOBILE MENU */}

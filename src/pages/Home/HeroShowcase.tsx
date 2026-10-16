@@ -22,6 +22,40 @@ import {
   spriteStyle,
 } from 'src/game/atlas';
 import { logTrackClickEventAnalytics } from 'src/libs/logEvent';
+import { defineText, Lang, useLang, useText } from 'src/i18n';
+
+const TEXT = defineText(
+  {
+    kicker: 'The heroes',
+    title: 'Meet your squad',
+    sub: 'Nine heroes and ten rarities, from Common to Super Mystic. Pick one, or press Mint to roll a rarity with the real odds.',
+    mint: 'Mint',
+    hero: 'Hero',
+    rarity: 'Rarity',
+    stats: 'Stats range',
+    speed: 'Speed',
+    power: 'Power',
+    range: 'Range',
+    bombs: 'Bombs',
+    odds: 'Mint odds',
+    source: 'Odds and stat ranges from the game server, per 10,000 mints.',
+  },
+  {
+    kicker: 'Os heróis',
+    title: 'Monte seu time',
+    sub: 'Nove heróis e dez raridades, de Common a Super Mystic. Escolha um ou aperte Mintar para sortear uma raridade com as chances reais.',
+    mint: 'Mintar',
+    hero: 'Herói',
+    rarity: 'Raridade',
+    stats: 'Atributos',
+    speed: 'Velocidade',
+    power: 'Poder',
+    range: 'Alcance',
+    bombs: 'Bombas',
+    odds: 'Chance de mint',
+    source: 'Chances e atributos do servidor do jogo, a cada 10.000 mints.',
+  },
+);
 import {
   arcadeBorder,
   arcadeColors,
@@ -284,13 +318,19 @@ const Source = styled.div`
   color: ${arcadeColors.smoke};
 `;
 
-const pct = (w: number) => {
+const pct = (w: number, lang: Lang) => {
   const p = (w / TOTAL_WEIGHT) * 100;
-  return `${p >= 1 ? p.toFixed(1) : p.toFixed(2)}%`;
+  const digits = p >= 1 ? 1 : 2;
+  return `${p.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })}%`;
 };
 
 const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
   const [hero, setHero] = useState<HeroId>('frog');
+  const t = useText(TEXT);
+  const { lang } = useLang();
   const [rarity, setRarity] = useState<Rarity>('legend');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lookRef = useRef({ hero, rarity, mintedAt: 0 });
@@ -417,12 +457,9 @@ const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
     <Section id={id}>
       <ArcadeContainer>
         <Reveal>
-          <Kicker>The heroes</Kicker>
-          <SectionTitle>Meet your squad</SectionTitle>
-          <SectionSubtitle>
-            Nine heroes and ten rarities, from Common to Super Mystic. Pick one,
-            or press Mint to roll a rarity with the real odds.
-          </SectionSubtitle>
+          <Kicker>{t.kicker}</Kicker>
+          <SectionTitle>{t.title}</SectionTitle>
+          <SectionSubtitle>{t.sub}</SectionSubtitle>
         </Reveal>
         <Reveal delay={120}>
           <Lab>
@@ -434,14 +471,14 @@ const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
               </NameTag>
               <MintSlot>
                 <ArcadeButton type="button" $tone="red" onClick={mint}>
-                  Mint
+                  {t.mint}
                 </ArcadeButton>
               </MintSlot>
             </Stage>
             <Panel>
               <div>
-                <Label>Hero</Label>
-                <Opts role="radiogroup" aria-label="Hero">
+                <Label>{t.hero}</Label>
+                <Opts role="radiogroup" aria-label={t.hero}>
                   {HEROES.map((h) => (
                     <Opt
                       key={h.id}
@@ -464,8 +501,8 @@ const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
                 </Opts>
               </div>
               <div>
-                <Label>Rarity</Label>
-                <Opts role="radiogroup" aria-label="Rarity">
+                <Label>{t.rarity}</Label>
+                <Opts role="radiogroup" aria-label={t.rarity}>
                   {RARITIES.map((r) => (
                     <Opt
                       key={r.id}
@@ -483,14 +520,14 @@ const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
                 </Opts>
               </div>
               <div>
-                <Label>Stats range</Label>
+                <Label>{t.stats}</Label>
                 <Stats>
                   {(
                     [
-                      [skillSpeed, 'Speed', `${a}–${b}`],
-                      [skillPower, 'Power', `${a}–${b}`],
-                      [skillRange, 'Range', lv + 1],
-                      [skillBombs, 'Bombs', lv + 1],
+                      [skillSpeed, t.speed, `${a}–${b}`],
+                      [skillPower, t.power, `${a}–${b}`],
+                      [skillRange, t.range, lv + 1],
+                      [skillBombs, t.bombs, lv + 1],
                     ] as [string, string, string | number][]
                   ).map(([icon, k, v]) => (
                     <Stat key={k}>
@@ -504,7 +541,7 @@ const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
                 </Stats>
               </div>
               <div>
-                <Label>Mint odds</Label>
+                <Label>{t.odds}</Label>
                 <Odds>
                   {RARITIES.map((r) => (
                     <Odd
@@ -526,13 +563,11 @@ const HeroShowcase: React.FC<{ id: string }> = ({ id }) => {
                           }}
                         />
                       </span>
-                      <span className="pct">{pct(r.weight)}</span>
+                      <span className="pct">{pct(r.weight, lang)}</span>
                     </Odd>
                   ))}
                 </Odds>
-                <Source>
-                  Odds and stat ranges from the game server, per 10,000 mints.
-                </Source>
+                <Source>{t.source}</Source>
               </div>
             </Panel>
           </Lab>

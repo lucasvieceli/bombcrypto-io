@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import bombstatsLogo from 'src/assests/community/bombstats.webp';
 import bombanalyticsLogo from 'src/assests/community/bombanalytics.webp';
 import { logTrackClickEventAnalytics } from 'src/libs/logEvent';
+import { defineText, Lang, useLang, useText } from 'src/i18n';
 import {
   arcadeBorder,
   arcadeColors,
@@ -29,15 +30,19 @@ import {
 
 type Tone = 'yellow' | 'blue' | 'green' | 'red' | 'purple';
 
+type ToolText = {
+  tagline: string;
+  description: string;
+  features: string[];
+  tags: string[];
+};
+
 type CommunityTool = {
   name: string;
   url: string;
   domain: string;
   logo: string;
-  tagline: string;
-  description: string;
-  features: string[];
-  tags: string[];
+  text: Record<Lang, ToolText>;
   tone: Tone;
   accent: string;
 };
@@ -48,16 +53,32 @@ const COMMUNITY_TOOLS: CommunityTool[] = [
     url: 'https://bombstats.com',
     domain: 'bombstats.com',
     logo: bombstatsLogo,
-    tagline: 'Your whole farm on one screen',
-    description:
-      'A desktop dashboard for BombCrypto players: follow every account in real time, watch the live map and get alerts on your phone.',
-    features: [
-      'Multiple accounts side by side',
-      'Live Treasure Hunt map and earnings per hour',
-      'Telegram alerts and commands',
-      'Windows, macOS, Linux and 24/7 server version',
-    ],
-    tags: ['Desktop app', 'Free'],
+    text: defineText(
+      {
+        tagline: 'Your whole farm on one screen',
+        description:
+          'A desktop dashboard for BombCrypto players: follow every account in real time, watch the live map and get alerts on your phone.',
+        features: [
+          'Multiple accounts side by side',
+          'Live Treasure Hunt map and earnings per hour',
+          'Telegram alerts and commands',
+          'Windows, macOS, Linux and 24/7 server version',
+        ],
+        tags: ['Desktop app', 'Free'],
+      },
+      {
+        tagline: 'Seu farm inteiro numa tela só',
+        description:
+          'Um painel para computador feito para quem joga BombCrypto: acompanhe todas as contas em tempo real, veja o mapa ao vivo e receba avisos no celular.',
+        features: [
+          'Várias contas lado a lado',
+          'Mapa do Treasure Hunt ao vivo e ganhos por hora',
+          'Avisos e comandos pelo Telegram',
+          'Windows, macOS, Linux e versão de servidor 24h',
+        ],
+        tags: ['App para PC', 'Grátis'],
+      },
+    ),
     tone: 'yellow',
     accent: arcadeColors.yellow,
   },
@@ -66,20 +87,55 @@ const COMMUNITY_TOOLS: CommunityTool[] = [
     url: 'https://bombanalytics.com',
     domain: 'bombanalytics.com',
     logo: bombanalyticsLogo,
-    tagline: 'On-chain insights, all in one place',
-    description:
-      'An analytics dashboard built on public BNB Chain and Polygon data, with context to help you make better in-game decisions.',
-    features: [
-      'BCOIN and SEN prices on both chains',
-      'Stake rankings, claims and reward pools',
-      'Marketplace listings and recent sales',
-      'Hero supply, burns and rarity charts',
-    ],
-    tags: ['Web', 'On-chain data'],
+    text: defineText(
+      {
+        tagline: 'On-chain insights, all in one place',
+        description:
+          'An analytics dashboard built on public BNB Chain and Polygon data, with context to help you make better in-game decisions.',
+        features: [
+          'BCOIN and SEN prices on both chains',
+          'Stake rankings, claims and reward pools',
+          'Marketplace listings and recent sales',
+          'Hero supply, burns and rarity charts',
+        ],
+        tags: ['Web', 'On-chain data'],
+      },
+      {
+        tagline: 'Dados on-chain, tudo num lugar só',
+        description:
+          'Um painel de análise feito com os dados públicos da BNB Chain e da Polygon, com explicações para ajudar você a decidir melhor no jogo.',
+        features: [
+          'Preços de BCOIN e SEN nas duas redes',
+          'Ranking de stake, saques e pools de recompensa',
+          'Anúncios e vendas recentes do Marketplace',
+          'Gráficos de heróis existentes, queimados e por raridade',
+        ],
+        tags: ['Web', 'Dados on-chain'],
+      },
+    ),
     tone: 'blue',
     accent: arcadeColors.cyan,
   },
 ];
+
+const TEXT = defineText(
+  {
+    badge: '★ Made by players',
+    title: 'Community Tools',
+    sub: 'The BombCrypto community builds amazing things. Here are some tools made by players, for players — take a look and level up your game.',
+    logo: (name: string) => `${name} logo`,
+    visit: (domain: string) => `Visit ${domain} ↗`,
+    note: 'Community projects are made and run independently by players — they are not operated by the BombCrypto team. Never share your seed phrase or private key with anyone. Built something for the community? Show us on',
+  },
+  {
+    badge: '★ Feito por jogadores',
+    title: 'Ferramentas da comunidade',
+    sub: 'A comunidade do BombCrypto cria coisas incríveis. Aqui estão algumas ferramentas feitas por jogadores, para jogadores. Dê uma olhada e melhore seu jogo.',
+    logo: (name: string) => `Logo do ${name}`,
+    visit: (domain: string) => `Visitar ${domain} ↗`,
+    note: 'Os projetos da comunidade são feitos e mantidos de forma independente por jogadores, não pelo time do BombCrypto. Nunca passe sua frase de recuperação (seed) ou chave privada para ninguém. Fez algo para a comunidade? Mostre para a gente no',
+  },
+);
 
 const Section = styled(ArcadeSection)`
   overflow: hidden;
@@ -270,83 +326,82 @@ const Note = styled.p`
   }
 `;
 
-const Community: React.FC<{ id: string }> = ({ id }) => (
-  <Section id={id}>
-    <ArcadeContainer>
-      <Reveal>
-        <Head>
-          <ArcadeBadge $tone="purple" style={{ marginBottom: 18 }}>
-            ★ Made by players
-          </ArcadeBadge>
-          <SectionTitle $center>Community Tools</SectionTitle>
-          <SectionSubtitle $center>
-            The BombCrypto community builds amazing things. Here are some tools
-            made by players, for players — take a look and level up your game.
-          </SectionSubtitle>
-        </Head>
-      </Reveal>
+const Community: React.FC<{ id: string }> = ({ id }) => {
+  const t = useText(TEXT);
+  const { lang } = useLang();
+  return (
+    <Section id={id}>
+      <ArcadeContainer>
+        <Reveal>
+          <Head>
+            <ArcadeBadge $tone="purple" style={{ marginBottom: 18 }}>
+              {t.badge}
+            </ArcadeBadge>
+            <SectionTitle $center>{t.title}</SectionTitle>
+            <SectionSubtitle $center>{t.sub}</SectionSubtitle>
+          </Head>
+        </Reveal>
 
-      <Grid>
-        {COMMUNITY_TOOLS.map((tool, i) => (
-          <Reveal key={tool.name} delay={i * 120}>
-            <Card
-              href={tool.url}
-              target="_blank"
-              rel="noopener"
-              $accent={tool.accent}
-              onClick={() =>
-                logTrackClickEventAnalytics(
-                  `community_${tool.name.toLowerCase()}_click`,
-                )
-              }
-            >
-              <Banner $accent={tool.accent}>
-                <img src={tool.logo} alt={`${tool.name} logo`} loading="lazy" />
-              </Banner>
-              <Body>
-                <Name $accent={tool.accent}>{tool.name}</Name>
-                <Domain>{tool.domain}</Domain>
-                <Tags>
-                  {tool.tags.map((t) => (
-                    <ArcadeBadge key={t} $tone="dark">
-                      {t}
-                    </ArcadeBadge>
-                  ))}
-                </Tags>
-                <Tagline>{tool.tagline}</Tagline>
-                <Description>{tool.description}</Description>
-                <Features>
-                  {tool.features.map((f) => (
-                    <li key={f}>
-                      <Bullet $accent={tool.accent} />
-                      {f}
-                    </li>
-                  ))}
-                </Features>
-                <Cta as="span" $tone={tool.tone}>
-                  Visit {tool.domain} ↗
-                </Cta>
-              </Body>
-            </Card>
-          </Reveal>
-        ))}
-      </Grid>
+        <Grid>
+          {COMMUNITY_TOOLS.map((tool, i) => (
+            <Reveal key={tool.name} delay={i * 120}>
+              <Card
+                href={tool.url}
+                target="_blank"
+                rel="noopener"
+                $accent={tool.accent}
+                onClick={() =>
+                  logTrackClickEventAnalytics(
+                    `community_${tool.name.toLowerCase()}_click`,
+                  )
+                }
+              >
+                <Banner $accent={tool.accent}>
+                  <img src={tool.logo} alt={t.logo(tool.name)} loading="lazy" />
+                </Banner>
+                <Body>
+                  <Name $accent={tool.accent}>{tool.name}</Name>
+                  <Domain>{tool.domain}</Domain>
+                  <Tags>
+                    {tool.text[lang].tags.map((tag) => (
+                      <ArcadeBadge key={tag} $tone="dark">
+                        {tag}
+                      </ArcadeBadge>
+                    ))}
+                  </Tags>
+                  <Tagline>{tool.text[lang].tagline}</Tagline>
+                  <Description>{tool.text[lang].description}</Description>
+                  <Features>
+                    {tool.text[lang].features.map((f) => (
+                      <li key={f}>
+                        <Bullet $accent={tool.accent} />
+                        {f}
+                      </li>
+                    ))}
+                  </Features>
+                  <Cta as="span" $tone={tool.tone}>
+                    {t.visit(tool.domain)}
+                  </Cta>
+                </Body>
+              </Card>
+            </Reveal>
+          ))}
+        </Grid>
 
-      <Note>
-        Community projects are made and run independently by players — they are
-        not operated by the BombCrypto team. Never share your seed phrase or
-        private key with anyone. Built something for the community? Show us on{' '}
-        <a
-          href="https://discord.gg/wG75cP9TRh"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Discord
-        </a>
-        .
-      </Note>
-    </ArcadeContainer>
-  </Section>
-);
+        <Note>
+          {t.note}{' '}
+          <a
+            href="https://discord.gg/wG75cP9TRh"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Discord
+          </a>
+          .
+        </Note>
+      </ArcadeContainer>
+    </Section>
+  );
+};
 
 export default Community;

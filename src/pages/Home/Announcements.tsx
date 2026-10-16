@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { notifications } from 'src/data/notification';
 import { logTrackClickEventAnalytics } from 'src/libs/logEvent';
+import { defineText, useText } from 'src/i18n';
 import {
   arcadeBorder,
   arcadeColors,
@@ -31,11 +32,24 @@ const TAG_COLOR: Record<string, string> = {
   event: arcadeColors.cyan,
   feature: '#FF7FA8',
 };
-const TAG_NAME: Record<string, string> = {
-  new: 'News',
-  event: 'Event',
-  feature: 'Feature',
-};
+const TEXT = defineText(
+  {
+    title: 'Announcements',
+    sub: 'News, events and features from the BombCrypto team.',
+    tags: { new: 'News', event: 'Event', feature: 'Feature' } as Record<
+      string,
+      string
+    >,
+  },
+  {
+    title: 'Anúncios',
+    sub: 'Novidades, eventos e recursos do time do BombCrypto. Os artigos estão em inglês.',
+    tags: { new: 'Novidade', event: 'Evento', feature: 'Recurso' } as Record<
+      string,
+      string
+    >,
+  },
+);
 
 /** "dd/mm/aa" → número comparável (aaaammdd). */
 const dateKey = (d: string) => {
@@ -168,54 +182,55 @@ const More = styled.div`
 
 const track = () => logTrackClickEventAnalytics('community_click');
 
-const Announcements: React.FC<{ id: string }> = ({ id }) => (
-  <ArcadeSection id={id}>
-    <ArcadeContainer>
-      <Reveal>
-        <SectionTitle>Announcements</SectionTitle>
-        <SectionSubtitle>
-          News, events and features from the BombCrypto team.
-        </SectionSubtitle>
-      </Reveal>
-      <Cards>
-        {featured.map((n, i) => (
-          <Reveal key={n.href} delay={i * 100}>
-            <Card
-              href={n.href}
-              target="_blank"
-              rel="noreferrer"
-              onClick={track}
-            >
-              {n.img && <img src={n.img} alt="" loading="lazy" />}
-              <Body>
-                <Tag $c={TAG_COLOR[n.kind] ?? arcadeColors.yellow}>
-                  {TAG_NAME[n.kind] ?? n.kind}
-                </Tag>
-                <h3>{n.des}</h3>
-                <time>{n.date}</time>
-              </Body>
-            </Card>
-          </Reveal>
-        ))}
-      </Cards>
-      {rest.length > 0 && (
-        <More>
-          {rest.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              target="_blank"
-              rel="noreferrer"
-              onClick={track}
-            >
-              <span>{n.des}</span>
-              <time>{n.date}</time>
-            </a>
+const Announcements: React.FC<{ id: string }> = ({ id }) => {
+  const t = useText(TEXT);
+  return (
+    <ArcadeSection id={id}>
+      <ArcadeContainer>
+        <Reveal>
+          <SectionTitle>{t.title}</SectionTitle>
+          <SectionSubtitle>{t.sub}</SectionSubtitle>
+        </Reveal>
+        <Cards>
+          {featured.map((n, i) => (
+            <Reveal key={n.href} delay={i * 100}>
+              <Card
+                href={n.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={track}
+              >
+                {n.img && <img src={n.img} alt="" loading="lazy" />}
+                <Body>
+                  <Tag $c={TAG_COLOR[n.kind] ?? arcadeColors.yellow}>
+                    {t.tags[n.kind] ?? n.kind}
+                  </Tag>
+                  <h3>{n.des}</h3>
+                  <time>{n.date}</time>
+                </Body>
+              </Card>
+            </Reveal>
           ))}
-        </More>
-      )}
-    </ArcadeContainer>
-  </ArcadeSection>
-);
+        </Cards>
+        {rest.length > 0 && (
+          <More>
+            {rest.map((n) => (
+              <a
+                key={n.href}
+                href={n.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={track}
+              >
+                <span>{n.des}</span>
+                <time>{n.date}</time>
+              </a>
+            ))}
+          </More>
+        )}
+      </ArcadeContainer>
+    </ArcadeSection>
+  );
+};
 
 export default Announcements;

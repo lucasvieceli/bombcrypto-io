@@ -28,6 +28,56 @@ import {
   SectionTitle,
 } from 'src/components/ui';
 import { arcadeToast } from 'src/components/ui/toast';
+import { defineText, useLang, useText } from 'src/i18n';
+
+const TEXT = defineText(
+  {
+    kicker: 'Rest & recharge',
+    title: 'Houses',
+    sub: 'Heroes spend energy breaking chests. A house lets them rest and recharge many times faster than sleeping outside. Bigger houses fit more heroes and recharge faster.',
+    tier: 'TIER',
+    fits: (n: number) => `Fits ${n} heroes`,
+    perMin: (n: number) => `${n} energy / min`,
+    energy: 'Energy',
+    fullIn: (d: string) => `full in ${d}`,
+    house: 'House',
+    recharge: 'Recharge',
+    slots: 'Slots',
+    supply: 'Supply',
+    stamina: 'Hero stamina',
+    energyOf: (s: number, e: number) => `${s} · ${e} energy`,
+    race: 'Time to fully recharge',
+    noHouse: 'No house',
+    isNew: 'New',
+    rent: 'Rent extra houses for 7, 14 or 30 days with BNB or POL. Their slots add up to your active house.',
+    copy: 'Copy',
+    copied: 'Address copied!',
+    market: 'Visit market',
+  },
+  {
+    kicker: 'Descanso e recarga',
+    title: 'Casas',
+    sub: 'Os heróis gastam energia quebrando baús. Na casa eles descansam e recarregam muito mais rápido do que dormindo do lado de fora. Casas maiores cabem mais heróis e recarregam mais rápido.',
+    tier: 'NÍVEL',
+    fits: (n: number) => `Cabem ${n} heróis`,
+    perMin: (n: number) => `${n} de energia / min`,
+    energy: 'Energia',
+    fullIn: (d: string) => `cheia em ${d}`,
+    house: 'Casa',
+    recharge: 'Recarga',
+    slots: 'Vagas',
+    supply: 'Existem',
+    stamina: 'Stamina do herói',
+    energyOf: (s: number, e: number) => `${s} · ${e} de energia`,
+    race: 'Tempo para recarregar tudo',
+    noHouse: 'Sem casa',
+    isNew: 'Novo',
+    rent: 'Alugue casas extras por 7, 14 ou 30 dias com BNB ou POL. As vagas delas somam com as da sua casa ativa.',
+    copy: 'Copiar',
+    copied: 'Endereço copiado!',
+    market: 'Ver no mercado',
+  },
+);
 
 /*
  * Casas (BHouse): o visitante escolhe uma das 6, vê quantos heróis cabem e
@@ -469,6 +519,8 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
   network,
 }) => {
   const [sel, setSel] = useState(5);
+  const t = useText(TEXT);
+  const { lang } = useLang();
   const [stamina, setStamina] = useState(10);
   const [floor, setFloor] = useState('');
   useEffect(() => {
@@ -489,7 +541,7 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
       name: h.name,
       min: energy / perMin(h.recovery),
     })),
-    { i: -1, name: 'No house', min: energy / SLEEP_RATE },
+    { i: -1, name: t.noHouse, min: energy / SLEEP_RATE },
   ];
   const longest = energy / SLEEP_RATE;
   const contract = CONTRACTS[network] ?? CONTRACTS[NETWORK.BINANCE];
@@ -498,7 +550,7 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(contract);
-      arcadeToast('Address copied!');
+      arcadeToast(t.copied);
     } catch (e) {
       arcadeToast(contract);
     }
@@ -508,13 +560,9 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
     <Section id={id}>
       <ArcadeContainer>
         <Reveal>
-          <Kicker>Rest &amp; recharge</Kicker>
-          <SectionTitle>Houses</SectionTitle>
-          <SectionSubtitle>
-            Heroes spend energy breaking chests. A house lets them rest and
-            recharge many times faster than sleeping outside. Bigger houses fit
-            more heroes and recharge faster.
-          </SectionSubtitle>
+          <Kicker>{t.kicker}</Kicker>
+          <SectionTitle>{t.title}</SectionTitle>
+          <SectionSubtitle>{t.sub}</SectionSubtitle>
         </Reveal>
         <Reveal delay={120}>
           <Lab>
@@ -522,7 +570,7 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
               <Tag>
                 {house.name}
                 <small>
-                  TIER {sel + 1}/{HOUSES.length}
+                  {t.tier} {sel + 1}/{HOUSES.length}
                 </small>
               </Tag>
               <HouseArt>
@@ -530,8 +578,8 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
               </HouseArt>
               <Porch>
                 <Label>
-                  Fits {house.slots} heroes
-                  <b>{rate} energy / min</b>
+                  {t.fits(house.slots)}
+                  <b>{t.perMin(rate)}</b>
                 </Label>
                 <Slots aria-hidden="true">
                   {Array.from({ length: house.slots }, (_, i) => (
@@ -550,19 +598,19 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
                   $seconds={Math.max(1.2, fullMin / 10)}
                   key={`${sel}-${stamina}`}
                 >
-                  Energy
+                  {t.energy}
                   <span className="bar">
                     <i />
                   </span>
-                  <b>full in {duration(fullMin)}</b>
+                  <b>{t.fullIn(duration(fullMin))}</b>
                 </Energy>
               </Porch>
             </Stage>
 
             <Panel>
               <div>
-                <Label>House</Label>
-                <Picks role="radiogroup" aria-label="House">
+                <Label>{t.house}</Label>
+                <Picks role="radiogroup" aria-label={t.house}>
                   {HOUSES.map((h, i) => (
                     <Pick
                       key={h.name}
@@ -581,28 +629,28 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
               </div>
               <Stats>
                 <div>
-                  <div className="k">Recharge</div>
+                  <div className="k">{t.recharge}</div>
                   <div className="v">
                     {rate} <small>/ min</small>
                   </div>
                 </div>
                 <div>
-                  <div className="k">Slots</div>
+                  <div className="k">{t.slots}</div>
                   <div className="v">{house.slots}</div>
                 </div>
                 <div>
-                  <div className="k">Supply</div>
+                  <div className="k">{t.supply}</div>
                   <div className="v">
-                    {house.supply.toLocaleString('en-US')}
+                    {house.supply.toLocaleString(
+                      lang === 'pt' ? 'pt-BR' : 'en-US',
+                    )}
                   </div>
                 </div>
               </Stats>
               <div>
                 <Label as="label" htmlFor="house-stamina">
-                  Hero stamina
-                  <b>
-                    {stamina} · {energy} energy
-                  </b>
+                  {t.stamina}
+                  <b>{t.energyOf(stamina, energy)}</b>
                 </Label>
                 <Slider
                   id="house-stamina"
@@ -614,7 +662,7 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
                 />
               </div>
               <div>
-                <Label>Time to fully recharge</Label>
+                <Label>{t.race}</Label>
                 <Race>
                   {lanes.map((l) => (
                     <Lane
@@ -644,11 +692,8 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
         <Reveal>
           <Foot>
             <div>
-              <ArcadeBadge $tone="green">New</ArcadeBadge>{' '}
-              <p style={{ display: 'inline' }}>
-                Rent extra houses for 7, 14 or 30 days with BNB or POL. Their
-                slots add up to your active house.
-              </p>
+              <ArcadeBadge $tone="green">{t.isNew}</ArcadeBadge>{' '}
+              <p style={{ display: 'inline' }}>{t.rent}</p>
               <Addr>
                 <span>BHOUSE</span>
                 <a
@@ -659,7 +704,7 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
                   {contract}
                 </a>
                 <button type="button" onClick={copy}>
-                  Copy
+                  {t.copy}
                 </button>
               </Addr>
             </div>
@@ -670,7 +715,7 @@ const HouseShowcase: React.FC<{ id: string; network: string }> = ({
               rel="noreferrer"
               onClick={() => logTrackClickEventAnalytics('house_market_click')}
             >
-              Visit market
+              {t.market}
             </ArcadeButton>
           </Foot>
         </Reveal>

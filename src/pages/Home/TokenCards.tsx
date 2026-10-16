@@ -31,6 +31,47 @@ import {
   SectionTitle,
 } from 'src/components/ui';
 import { arcadeToast } from 'src/components/ui/toast';
+import { defineText, useText } from 'src/i18n';
+
+const TEXT = defineText(
+  {
+    sub: (net: string) =>
+      `BCOIN and SEN on ${net}. Copy a contract, add it to your wallet or trade it. Switch the chain in the menu to see the others.`,
+    day: '24h',
+    week: 'Price over the last 7 days',
+    liquidity: 'Liquidity',
+    chart: 'chart',
+    explorer: 'Open in the explorer',
+    copy: 'Copy',
+    copied: 'Address copied!',
+    addMetaMask: 'Add to MetaMask',
+    noMetaMask: 'MetaMask not installed. Please install MetaMask.',
+    switchTo: (net: string) => `Please switch MetaMask to ${net}.`,
+    audit: 'Audit',
+    trade: 'Trade',
+    tradeOn: (sym: string, where: string) => `Trade ${sym} on ${where}`,
+    note: 'Prices from GeckoTerminal, updated when the page opens. Not financial advice.',
+  },
+  {
+    sub: (net: string) =>
+      `BCOIN e SEN na ${net}. Copie o contrato, adicione na sua carteira ou negocie. Troque a rede no menu para ver as outras.`,
+    day: '24h',
+    week: 'Preço nos últimos 7 dias',
+    liquidity: 'Liquidez',
+    chart: 'gráfico',
+    explorer: 'Abrir no explorador',
+    copy: 'Copiar',
+    copied: 'Endereço copiado!',
+    addMetaMask: 'Adicionar na MetaMask',
+    noMetaMask: 'MetaMask não instalada. Instale a MetaMask para continuar.',
+    switchTo: (net: string) => `Troque a rede da MetaMask para ${net}.`,
+    audit: 'Auditoria',
+    trade: 'Negociar',
+    tradeOn: (sym: string, where: string) => `Negociar ${sym} na ${where}`,
+    note: 'Preços da GeckoTerminal, atualizados quando a página abre. Não é recomendação de investimento.',
+  },
+);
+type Text = typeof TEXT.en;
 
 /*
  * Tokens em cards: preço, variação de 24 h, gráfico de 7 dias e liquidez ao
@@ -323,10 +364,12 @@ function Sparkline({
   week,
   up,
   id,
+  label,
 }: {
   week: number[];
   up: boolean;
   id: string;
+  label: string;
 }) {
   if (week.length < 2) return <Spark viewBox="0 0 300 64" aria-hidden="true" />;
   const min = Math.min(...week);
@@ -343,11 +386,7 @@ function Sparkline({
     .join(' ');
   const col = up ? '#5CF07A' : '#FF6B78';
   return (
-    <Spark
-      viewBox="0 0 300 64"
-      preserveAspectRatio="none"
-      aria-label="Price over the last 7 days"
-    >
+    <Spark viewBox="0 0 300 64" preserveAspectRatio="none" aria-label={label}>
       <defs>
         <linearGradient id={`spark-${id}`} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0" stopColor={col} stopOpacity=".35" />
@@ -372,15 +411,15 @@ function getProvider(): any {
   return w.ethereum || w.web3?.currentProvider;
 }
 
-function addToMetaMask(card: Card) {
+function addToMetaMask(card: Card, tx: Text) {
   logTrackClickEventAnalytics('addmask_click');
   const provider = getProvider();
   if (!provider) {
-    arcadeToast('MetaMask not installed. Please install MetaMask.');
+    arcadeToast(tx.noMetaMask);
     return;
   }
   if (provider.chainId !== card.chainId) {
-    arcadeToast(`Please switch MetaMask to ${card.networkName}.`);
+    arcadeToast(tx.switchTo(card.networkName));
     return;
   }
   const { address, symbol, decimals } = card.token;
@@ -417,10 +456,10 @@ function tradeName(link: string) {
   }
 }
 
-async function copy(text: string) {
+async function copy(text: string, tx: Text) {
   try {
     await navigator.clipboard.writeText(text);
-    arcadeToast('Address copied!');
+    arcadeToast(tx.copied);
   } catch (e) {
     arcadeToast(text);
   }
@@ -434,6 +473,7 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
   // seletor vêm numa busca só, então trocar de rede não espera a API
   const cards = CARDS.filter((c) => c.network === networkSelected);
   const networkName = cards[0]?.networkName ?? networkSelected;
+  const tx = useText(TEXT);
   const [markets, setMarkets] = useState<Record<string, Market> | null>(null);
 
   useEffect(() => {
@@ -451,10 +491,7 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
       <ArcadeContainer>
         <Reveal>
           <SectionTitle>Tokens</SectionTitle>
-          <SectionSubtitle>
-            BCOIN and SEN on {networkName}. Copy a contract, add it to your
-            wallet or trade it. Switch the chain in the menu to see the others.
-          </SectionSubtitle>
+          <SectionSubtitle>{tx.sub(networkName)}</SectionSubtitle>
         </Reveal>
         <Grid>
           {cards.map((c, i) => {
@@ -473,8 +510,8 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
                       <b>{m ? usd(m.price) : '—'}</b>
                       {m && (
                         <Change $up={up}>
-                          {up ? '▲' : '▼'} {Math.abs(m.change).toFixed(1)}% ·
-                          24h
+                          {up ? '▲' : '▼'} {Math.abs(m.change).toFixed(1)}% ·{' '}
+                          {tx.day}
                         </Change>
                       )}
                     </div>
@@ -487,10 +524,11 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
                         : up
                     }
                     id={c.pool}
+                    label={tx.week}
                   />
                   <Meta>
                     <span>
-                      Liquidity{' '}
+                      {tx.liquidity}{' '}
                       <b>{m ? usd(m.liquidity) : c.token.pair?.liq ?? '—'}</b>
                     </span>
                     <span>
@@ -500,7 +538,7 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
                         target="_blank"
                         rel="noreferrer"
                       >
-                        chart
+                        {tx.chart}
                       </a>
                     </span>
                   </Meta>
@@ -509,21 +547,24 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
                       href={explorer(c)}
                       target="_blank"
                       rel="noreferrer"
-                      title="Open in the explorer"
+                      title={tx.explorer}
                     >
                       {c.token.address}
                     </a>
-                    <button type="button" onClick={() => copy(c.token.address)}>
-                      Copy
+                    <button
+                      type="button"
+                      onClick={() => copy(c.token.address, tx)}
+                    >
+                      {tx.copy}
                     </button>
                   </Addr>
                   <Actions>
                     {c.chainId && (
                       <SmallButton
                         type="button"
-                        onClick={() => addToMetaMask(c)}
+                        onClick={() => addToMetaMask(c, tx)}
                       >
-                        Add to MetaMask
+                        {tx.addMetaMask}
                       </SmallButton>
                     )}
                     {c.token.audit && (
@@ -534,20 +575,21 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
                         target="_blank"
                         rel="noreferrer"
                       >
-                        Audit
+                        {tx.audit}
                       </SmallButton>
                     )}
                     <Trade>
-                      Trade
+                      {tx.trade}
                       {c.token.trade.map((t) => (
                         <a
                           key={t.link}
                           href={t.link}
                           target="_blank"
                           rel="noreferrer"
-                          aria-label={`Trade ${c.token.symbol} on ${tradeName(
-                            t.link,
-                          )}`}
+                          aria-label={tx.tradeOn(
+                            c.token.symbol,
+                            tradeName(t.link),
+                          )}
                           title={tradeName(t.link)}
                           onClick={() =>
                             logTrackClickEventAnalytics('trade_click')
@@ -563,10 +605,7 @@ const TokenCards: React.FC<{ id: string; networkSelected: string }> = ({
             );
           })}
         </Grid>
-        <Note>
-          Prices from GeckoTerminal, updated when the page opens. Not financial
-          advice.
-        </Note>
+        <Note>{tx.note}</Note>
       </ArcadeContainer>
     </ArcadeSection>
   );

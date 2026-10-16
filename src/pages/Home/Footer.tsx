@@ -11,6 +11,44 @@ import {
 } from 'src/theme/arcade';
 import { ArcadeContainer } from 'src/components/ui';
 import { spriteDataUrl } from 'src/game/atlas';
+import { defineText, useText } from 'src/i18n';
+
+const TEXT = defineText(
+  {
+    tagline:
+      'Plant bombs, explore the map and earn rewards playing BombCrypto.',
+    game: 'Game',
+    home: 'Home',
+    play: 'Play Now',
+    metaverse: 'Metaverse',
+    resources: 'Resources',
+    whitepaper: 'Whitepaper',
+    database: 'Database',
+    mediaKit: 'Media Kit',
+    guide: 'Guide',
+    legal: 'Legal',
+    privacy: 'Privacy Policy',
+    terms: 'Terms Of Service',
+    rights: 'All rights reserved.',
+  },
+  {
+    tagline:
+      'Plante bombas, explore o mapa e ganhe recompensas jogando BombCrypto.',
+    game: 'Jogo',
+    home: 'Início',
+    play: 'Jogar agora',
+    metaverse: 'Metaverso',
+    resources: 'Recursos',
+    whitepaper: 'Whitepaper',
+    database: 'Banco de dados',
+    mediaKit: 'Kit de mídia',
+    guide: 'Guia',
+    legal: 'Legal',
+    privacy: 'Política de Privacidade',
+    terms: 'Termos de Serviço',
+    rights: 'Todos os direitos reservados.',
+  },
+);
 
 /* Muro do templo que cerca o mapa do jogo (BorderBG1), repetido na largura. */
 const Wall = styled.div<{ $src: string }>`
@@ -135,6 +173,7 @@ const Bottom = styled.div`
 
 const Footer: React.FC<{ id: string }> = ({ id }) => {
   const wall = useTempleWall();
+  const t = useText(TEXT);
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -149,22 +188,20 @@ const Footer: React.FC<{ id: string }> = ({ id }) => {
         <Inner>
           <div>
             <LogoFooterImg onClick={scrollToTop} src={logo} alt="logo footer" />
-            <Tagline>
-              Plant bombs, explore the map and earn rewards playing BombCrypto.
-            </Tagline>
+            <Tagline>{t.tagline}</Tagline>
           </div>
 
           <Columns>
             <div>
-              <ColumnTitle>Game</ColumnTitle>
-              <Text onClick={scrollToTop}>Home</Text>
+              <ColumnTitle>{t.game}</ColumnTitle>
+              <Text onClick={scrollToTop}>{t.home}</Text>
               <Text
                 as="a"
                 target={'_blank'}
                 href="https://game.bombcrypto.io/"
                 onClick={() => logTrackClickEventAnalytics('play_click')}
               >
-                Play Now
+                {t.play}
               </Text>
               <Text
                 as="a"
@@ -172,19 +209,19 @@ const Footer: React.FC<{ id: string }> = ({ id }) => {
                 href="https://senspark.com/"
                 onClick={() => logTrackClickEventAnalytics('Metaverse_click')}
               >
-                Metaverse
+                {t.metaverse}
               </Text>
             </div>
 
             <div>
-              <ColumnTitle>Resources</ColumnTitle>
+              <ColumnTitle>{t.resources}</ColumnTitle>
               <Text
                 as="a"
                 target={'_blank'}
                 href="https://whitepaper.bombcrypto.io/"
                 onClick={() => logTrackClickEventAnalytics('whiterpaper_click')}
               >
-                Whitepaper
+                {t.whitepaper}
               </Text>
               <Text
                 as="a"
@@ -192,7 +229,7 @@ const Footer: React.FC<{ id: string }> = ({ id }) => {
                 href="https://database.bombcrypto.io/index.html"
                 onClick={() => logTrackClickEventAnalytics('database_click')}
               >
-                Database
+                {t.database}
               </Text>
               <Text
                 as="a"
@@ -200,27 +237,27 @@ const Footer: React.FC<{ id: string }> = ({ id }) => {
                 href="https://bombcrypto.substack.com/p/bomb-cryptosenspark-media-kit"
                 onClick={() => logTrackClickEventAnalytics('mediakit_click')}
               >
-                Media Kit
+                {t.mediaKit}
               </Text>
               <LinkText to="/guide" onClick={scrollToTop}>
-                Guide
+                {t.guide}
               </LinkText>
             </div>
 
             <div>
-              <ColumnTitle>Legal</ColumnTitle>
+              <ColumnTitle>{t.legal}</ColumnTitle>
               <LinkText to="/privacy-policy" onClick={scrollToTop}>
-                Privacy Policy
+                {t.privacy}
               </LinkText>
               <LinkText to="/term-of-service" onClick={scrollToTop}>
-                Terms Of Service
+                {t.terms}
               </LinkText>
             </div>
           </Columns>
         </Inner>
       </ArcadeContainer>
       <Bottom>
-        © {new Date().getFullYear()} BombCrypto — Senspark. All rights reserved.
+        © {new Date().getFullYear()} BombCrypto — Senspark. {t.rights}
       </Bottom>
     </Wrapper>
   );
